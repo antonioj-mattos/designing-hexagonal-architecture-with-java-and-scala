@@ -7,14 +7,10 @@ import dev.amattos.domain.NetworkOperation
 import dev.amattos.domain.Router
 import dev.amattos.domain.Router.RouterId
 
-
-
 trait RouterNetworkUseCase:
-
   def addNetworkToRouter(routerId: RouterId, address: IP, name: String, cidr: Long): Task[Router]
 
 class RouterNetworkService(routerNetworkRepository: RouterNetworkRepository) extends RouterNetworkUseCase:
-
   final def addNetworkToRouter(routerId: RouterId, address: IP, name: String, cidr: Long): Task[Router] =
     routerNetworkRepository.forUpdate(routerId): router =>
       for

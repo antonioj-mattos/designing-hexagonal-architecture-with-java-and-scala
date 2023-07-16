@@ -7,7 +7,6 @@ trait RouterViewUseCase:
   def getRouters(filter: Router => Boolean): List[Router]
 
 class RouterViewService(routerViewRepository: RouterViewRepository) extends RouterViewUseCase:
-
   final def getRouters(filter: Router => Boolean): List[Router] =
     val routers = routerViewRepository.fetchRouters()
     RouterSearch.retrieveRouter(routers, filter)
