@@ -24,6 +24,8 @@ case class Router(routerId: RouterId, routerType: RouterType, switch: Switch):
 
   def networks: List[Network] = switch.networks
 
+  private def addressInUse(address: IP): Boolean = networks.exists(_.address == address)
+
   override def toString: String =
     s"Router{id=$routerId, type=$routerType}"
 
@@ -53,8 +55,7 @@ object Router:
    * `Router`.
    */
   def ensureNetworkAvailability(router: Router, address: IP): Task[Router] =
-    val addressInUse = router.networks.exists(_.address == address)
-    if !addressInUse then Right(router)
+    if !router.addressInUse(address) then Right(router)
     else Left(IllegalArgumentException("IP address is taken."))
 
   /**
@@ -62,8 +63,7 @@ object Router:
    * `Router`.
    */
   def ensureNetworkRegistered(router: Router, address: IP): Task[Router] =
-    val addressInUse = router.networks.exists(_.address == address)
-    if addressInUse then Right(router)
+    if router.addressInUse(address) then Right(router)
     else Left(IllegalArgumentException("IP address is not registered."))
 
 object RouterSearch:
