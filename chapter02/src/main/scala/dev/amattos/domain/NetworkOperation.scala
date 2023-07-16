@@ -8,3 +8,7 @@ object NetworkOperation:
       router  <- Router.ensureNetworkAvailability(router, address)
       network <- Router.createNetwork(address, name, cidr)
     yield router.addNetworkToSwitch(network)
+
+  def removeNetwork(router: Router, address: IP): Task[Router] =
+    for router <- Router.ensureNetworkRegistered(router, address)
+    yield router.removeNetworkFromSwitch(address)

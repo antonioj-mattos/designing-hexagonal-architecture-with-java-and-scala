@@ -16,6 +16,12 @@ case class Router(routerId: RouterId, routerType: RouterType, switch: Switch):
     val updatedSwitch = switch.addNetwork(network)
     copy(switch = updatedSwitch)
 
+  def removeNetworkFromSwitch(address: IP): Router =
+    val networkOption = networks.find(_.address == address)
+    networkOption match
+      case Some(network) => copy(switch = switch.removeNetwork(network))
+      case None          => this
+
   def networks: List[Network] = switch.networks
 
   override def toString: String =
@@ -51,6 +57,15 @@ object Router:
     if !addressInUse then Right(router)
     else Left(IllegalArgumentException("IP address is taken."))
 
+  /**
+   * Ensures that the given `IP` address is registered on the destination
+   * `Router`.
+   */
+  def ensureNetworkRegistered(router: Router, address: IP): Task[Router] =
+    val addressInUse = router.networks.exists(_.address == address)
+    if addressInUse then Right(router)
+    else Left(IllegalArgumentException("IP address is not registered."))
+
 object RouterSearch:
 
   def retrieveRouter(routers: List[Router], predicate: Router => Boolean): List[Router] =
@@ -62,6 +77,9 @@ enum SwitchType:
 case class Switch(switchId: SwitchId, switchType: SwitchType, networks: List[Network], address: IP):
   def addNetwork(network: Network): Switch =
     copy(networks = network +: networks)
+
+  def removeNetwork(network: Network): Switch =
+    copy(networks = networks.filter(_ != network))
 
   override def toString: String =
     s"Switch{id=$switchId, type=$switchType, address=$address}"
