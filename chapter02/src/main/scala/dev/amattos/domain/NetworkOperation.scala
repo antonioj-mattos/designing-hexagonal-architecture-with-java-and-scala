@@ -1,7 +1,9 @@
 package dev.amattos.domain
 
+import dev.amattos.Task
+
 object NetworkOperation:
-  def createNewNetwork(router: Router, address: IP, name: String, cidr: Long): Either[RuntimeException, Router] =
+  def createNewNetwork(router: Router, address: IP, name: String, cidr: Long): Task[Router] =
     for
       router  <- Router.ensureNetworkAvailability(router, address)
       network <- Router.createNetwork(address, name, cidr)

@@ -1,5 +1,7 @@
 package dev.amattos.domain
 
+import dev.amattos.Task
+
 import java.util.UUID
 
 import Router.RouterId
@@ -37,14 +39,14 @@ object Router:
   def filterRouterByType(routerType: RouterType): Router => Boolean =
     router => router.routerType == routerType
 
-  def createNetwork(address: IP, name: String, cidr: Long): Either[RuntimeException, Network] =
+  def createNetwork(address: IP, name: String, cidr: Long): Task[Network] =
     Network(address, name, cidr)
 
   /**
    * Ensures that the given `IP` address is available on the destination
    * `Router`.
    */
-  def ensureNetworkAvailability(router: Router, address: IP): Either[RuntimeException, Router] =
+  def ensureNetworkAvailability(router: Router, address: IP): Task[Router] =
     val addressInUse = router.networks.exists(_.address == address)
     if !addressInUse then Right(router)
     else Left(IllegalArgumentException("IP address is taken."))
@@ -87,7 +89,7 @@ case class Network private (address: IP, name: String, cidr: Long):
     s"Network{address=$address, name=$name, cidr=$cidr}"
 
 object Network:
-  def apply(address: IP, name: String, cidr: Long): Either[RuntimeException, Network] =
+  def apply(address: IP, name: String, cidr: Long): Task[Network] =
     if cidr < 1 || cidr > 32 then Left(IllegalArgumentException("Invalid CIDR value."))
     else Right(new Network(address, name, cidr))
 
@@ -111,7 +113,7 @@ case class IP private (address: String, protocol: Protocol):
     s"IP{address=$address, protocol=$protocol}"
 
 object IP:
-  def apply(address: String): Either[RuntimeException, IP] =
+  def apply(address: String): Task[IP] =
     if address.isEmpty() then Left(IllegalArgumentException("Invalid IP address value."))
     else
       val ip =
