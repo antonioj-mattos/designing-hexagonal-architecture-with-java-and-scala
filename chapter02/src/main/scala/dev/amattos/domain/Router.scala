@@ -27,7 +27,7 @@ case class Router(routerId: RouterId, routerType: RouterType, switch: Switch):
   private def addressInUse(address: IP): Boolean = networks.exists(_.address == address)
 
   override def toString: String =
-    s"Router{id=$routerId, type=$routerType}"
+    s"Router{id=$routerId, type=$routerType, switch=$switch}"
 
 object Router:
 
@@ -82,7 +82,7 @@ case class Switch(switchId: SwitchId, switchType: SwitchType, networks: List[Net
     copy(networks = networks.filter(_ != network))
 
   override def toString: String =
-    s"Switch{id=$switchId, type=$switchType, address=$address}"
+    s"Switch{id=$switchId, type=$switchType, address=$address, networks=$networks}"
 
 object Switch:
 
